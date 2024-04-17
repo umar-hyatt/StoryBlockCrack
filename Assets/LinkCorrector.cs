@@ -11,48 +11,55 @@ public class LinkCorrector : MonoBehaviour
     public PageSourceFetcher pageSourceFetcher;
     public TMP_Text logTxt;
     public Button downloadButton;
+    public TMP_Text downloadText;
     public void DownloadButton()
     {
-
-            Application.OpenURL(downloadableLink);
-        
+        ProvidedLinkChecker();
     }
 
-    private void Start()
+    public void OnLinkChange()
     {
-        downloadButton.interactable = false;
+        downloadText.text ="Download";
     }
-    public void OnValueChangeField()
+    public void ProvidedLinkChecker()
     {
-        downloadButton.interactable = false;
-        if (InputField.text == "")
+        //downloadButton.interactable = false;
+        if(InputField.text.Contains("html")||InputField.text.Contains("item"))
         {
-            logTxt.text = "";
+            downloadText.text ="Downloading...";
+            pageSourceFetcher.GetLink(InputField.text,OnGetLink);
+            logTxt.color=Color.yellow;
+            PrintLog( "fetching data...");
         }
-        
+        else if (InputField.text == "")
+        {
+            PrintLog("");
+        }
         else if (!InputField.text.Contains("http"))
         {
+            downloadText.text ="Invalid Link";
             logTxt.color=Color.red;
-            logTxt.text = "Invalid Link";
+            PrintLog( "Invalid Link");
         }
         else if(!InputField.text.Contains("html"))
         {
+            downloadText.text ="Invalid Link";
             logTxt.color=Color.red;
-            logTxt.text = "Invalid Link";
-        }
-        else
-        {
-            pageSourceFetcher.GetLink(InputField.text,OnGetLink);
-            logTxt.color=Color.yellow;
-            logTxt.text = "fetching data...";
+            PrintLog( "Invalid Link");
         }
     }
-
+    public void PrintLog(string msg)
+    {
+        print(msg);
+        logTxt.text=msg;
+    }
     public void OnGetLink(string link)
     {
         logTxt.color=Color.green;
-        logTxt.text = "File Ready";
+        PrintLog( "File Ready");
         downloadableLink = link;
         downloadButton.interactable = true;
+        Application.OpenURL(downloadableLink);
+        downloadText.text ="Opened";
     }
 }

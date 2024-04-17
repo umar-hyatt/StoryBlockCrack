@@ -16,31 +16,49 @@ public class PageSourceFetcher : MonoBehaviour
     }
 
     [TextArea(30, 100)] public string pageSource;
-
-    IEnumerator FetchPageSource(Action<string> onSuccess)
+IEnumerator FetchPageSource(Action<string> onSuccess)
+{
+    //url="https://www.pond5.com/sound-effects/item/52312871-whoosh-opener";
+    using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
-        {
-            // Send the request and wait for a response
-            yield return webRequest.SendWebRequest();
+        Debug.Log("Requesting URL: " + url);
+        yield return webRequest.SendWebRequest();
 
-            // Check for errors
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                Debug.LogError("Error: " + webRequest.error);
-                onSuccess.Invoke(webRequest.error);
-            }
-            else
-            {
-                // Print the page source to the console
-                pageSource = webRequest.downloadHandler.text;
-                pageSource.Replace("\\", "");
-                onSuccess.Invoke(GetCorrectLinks(pageSource));
-                Debug.Log("Page Source:\n" + webRequest.downloadHandler.text);
-            }
+        if (webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Error: " + webRequest.error);
+            // Call onSuccess with error message or handle it differently
+            onSuccess.Invoke("Error occurred: " + webRequest.error);
+        }
+        else
+        {
+            string pageSource = webRequest.downloadHandler.text;
+            // Assuming GetCorrectLinks is a method you've defined to process links
+            if(url.Contains("item"))onSuccess.Invoke(GetCorrectLinksp(pageSource));
+            else onSuccess.Invoke(GetCorrectLinks(pageSource));
+            Debug.Log("Page Source:\n" + pageSource);
         }
     }
+}
+string GetCorrectLinksp(string inputString)
+{
+    // Define the regular expression pattern to match URLs that start with "https://sounds.pond5.com"
+    // and end with "_nw_prev.m4a"
+    string pattern = @"(https://sounds\.pond5\.com[^\s]*_nw_prev\.m4a)";
 
+    // Use Regex.Matches to find all matches
+    MatchCollection matches = Regex.Matches(inputString, pattern);
+
+    // Output the matched URLs
+    foreach (Match match in matches)
+    {
+        string currentUrl = match.Value;
+        Debug.Log("Matched URL: " + currentUrl);
+        return currentUrl; // Return the first matched URL
+    }
+
+    return "Error"; // Return "Error" if no matches are found
+}
     string GetCorrectLinks(string inputString)
     {
         //inputString = "Here is a sample string with a .mp3 file: https://example.com/sample.mp3 and another one: https://example.com/another.mp4";
