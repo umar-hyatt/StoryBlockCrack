@@ -58,8 +58,20 @@ public class LinkCorrector : MonoBehaviour
         logTxt.color=Color.green;
         PrintLog( "File Ready");
         downloadableLink = link;
+        PrintLog(downloadableLink);
         downloadButton.interactable = true;
-        Application.OpenURL(downloadableLink);
+        //Application.OpenURL(downloadableLink);
+        Open(link);
         downloadText.text ="Opened";
     }
+    public void Open(string url)
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        Application.ExternalEval("window.open('" + url + "', '_blank')");
+        //Application.ExternalEval("OpenURL.open('" + url + "');");
+        #else
+        Application.OpenURL(url); // Fallback for non-WebGL platforms
+        #endif
+    }
+    
 }
