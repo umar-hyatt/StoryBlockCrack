@@ -19,16 +19,17 @@ public class PageSourceFetcher : MonoBehaviour
 IEnumerator FetchPageSource(Action<string> onSuccess)
 {
     //url="https://www.pond5.com/sound-effects/item/52312871-whoosh-opener";
+    //using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
     using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
     {
         Debug.Log("Requesting URL: " + url);
         yield return webRequest.SendWebRequest();
 
-        if (webRequest.result != UnityWebRequest.Result.Success)
+         if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
         {
             Debug.LogError("Error: " + webRequest.error);
             // Call onSuccess with error message or handle it differently
-            onSuccess.Invoke("Error occurred: " + webRequest.error);
+            onSuccess.Invoke("Error occurred: " + webRequest.downloadHandler.error);
         }
         else
         {

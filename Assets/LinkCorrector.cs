@@ -66,12 +66,12 @@ public class LinkCorrector : MonoBehaviour
     }
     public void Open(string url)
     {
-        #if UNITY_WEBGL && !UNITY_EDITOR
-        Application.ExternalEval("window.open('" + url + "', '_blank')");
-        //Application.ExternalEval("OpenURL.open('" + url + "');");
-        #else
+        // #if UNITY_WEBGL && !UNITY_EDITOR
+        // Application.ExternalEval("window.open('" + url + "', '_blank')");
+        // //Application.ExternalEval("OpenURL.open('" + url + "');");
+        // #else
         Application.OpenURL(url); // Fallback for non-WebGL platforms
-        #endif
+       // #endif
     }
     
 }
