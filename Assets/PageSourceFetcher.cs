@@ -9,14 +9,14 @@ public class PageSourceFetcher : MonoBehaviour
     // The URL you want to fetch the page source from
     public string url = "https://www.example.com";
     public string downloadableLink;
-    public void GetLink(string _url,Action<string> onsuccess)
+    public void GetLink(string _url,Action<string> onsuccess,Action<string> onError)
     {
         url = _url;
-        StartCoroutine(FetchPageSource(onsuccess));
+        StartCoroutine(FetchPageSource(onsuccess,onError));
     }
 
     [TextArea(30, 100)] public string pageSource;
-IEnumerator FetchPageSource(Action<string> onSuccess)
+IEnumerator FetchPageSource(Action<string> onSuccess, Action<string> onError)
 {
     //url="https://www.pond5.com/sound-effects/item/52312871-whoosh-opener";
     //using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
@@ -25,11 +25,11 @@ IEnumerator FetchPageSource(Action<string> onSuccess)
         Debug.Log("Requesting URL: " + url);
         yield return webRequest.SendWebRequest();
 
-         if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+        if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.LogError("Error: " + webRequest.error);
+            //Debug.LogError("Error: " + webRequest.error);
             // Call onSuccess with error message or handle it differently
-            onSuccess.Invoke("Error occurred: " + webRequest.downloadHandler.error);
+            onError.Invoke("Error occurred: " + webRequest.error);
         }
         else
         {

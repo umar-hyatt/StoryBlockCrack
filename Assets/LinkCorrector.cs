@@ -27,42 +27,43 @@ public class LinkCorrector : MonoBehaviour
         if(InputField.text.Contains("html")||InputField.text.Contains("item"))
         {
             downloadText.text ="Downloading...";
-            pageSourceFetcher.GetLink(InputField.text,OnGetLink);
-            logTxt.color=Color.yellow;
-            PrintLog( "fetching data...");
+            pageSourceFetcher.GetLink(InputField.text,OnGetLink,OnGetLinkFail);
+            PrintLog( "fetching data...",Color.yellow);
         }
         else if (InputField.text == "")
         {
-            PrintLog("");
+            PrintLog("",Color.white);
         }
         else if (!InputField.text.Contains("http"))
         {
             downloadText.text ="Invalid Link";
-            logTxt.color=Color.red;
-            PrintLog( "Invalid Link");
+            PrintLog( "Invalid Link",Color.red);
         }
         else if(!InputField.text.Contains("html"))
         {
             downloadText.text ="Invalid Link";
-            logTxt.color=Color.red;
-            PrintLog( "Invalid Link");
+            PrintLog( "Invalid Link",Color.red);
         }
     }
-    public void PrintLog(string msg)
+    public void PrintLog(string msg,Color color)
     {
         print(msg);
+        logTxt.color = color;
         logTxt.text=msg;
     }
     public void OnGetLink(string link)
     {
-        logTxt.color=Color.green;
-        PrintLog( "File Ready");
+        PrintLog( "File Ready", Color.green);
         downloadableLink = link;
-        PrintLog(downloadableLink);
+        PrintLog(downloadableLink, Color.green);
         downloadButton.interactable = true;
         //Application.OpenURL(downloadableLink);
         Open(link);
         downloadText.text ="Opened";
+    }
+    public void OnGetLinkFail(string error)
+    {
+        PrintLog( "Error: " + error, Color.red);
     }
     public void Open(string url)
     {
