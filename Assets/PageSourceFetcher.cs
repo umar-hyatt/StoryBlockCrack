@@ -25,6 +25,7 @@ IEnumerator FetchPageSource(Action<string> onSuccess, Action<string> onError)
         Debug.Log("Requesting URL: " + url);
         yield return webRequest.SendWebRequest();
 
+        //if (webRequest.result == UnityWebRequest.Result.ConnectionError)
         if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
         {
             //Debug.LogError("Error: " + webRequest.error);
@@ -33,7 +34,7 @@ IEnumerator FetchPageSource(Action<string> onSuccess, Action<string> onError)
         }
         else
         {
-            string pageSource = webRequest.downloadHandler.text;
+            pageSource = webRequest.downloadHandler.text;
             // Assuming GetCorrectLinks is a method you've defined to process links
             if(url.Contains("item"))onSuccess.Invoke(GetCorrectLinksp(pageSource));
             else onSuccess.Invoke(GetCorrectLinks(pageSource));
@@ -55,6 +56,7 @@ string GetCorrectLinksp(string inputString)
     {
         string currentUrl = match.Value;
         Debug.Log("Matched URL: " + currentUrl);
+        downloadableLink = currentUrl;
         return currentUrl; // Return the first matched URL
     }
 
